@@ -1,0 +1,9 @@
+{
+  "name": "battle-ship",
+  "scripts": {
+    "start-game": "node index.js"
+  },
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
