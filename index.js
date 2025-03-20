@@ -1,14 +1,17 @@
 //The Game Board it will acutally house all of our ship objects.
-let readlinesync = require("readline-sync");
-let boardSize = 4; //will need to be dynamically chosen
-let numShips = [2, 3]; //will need ot be dynamically made
-let enemyShips = []; //don't know if I need it
+let readLineSync = require("readline-sync");
+let gameInfo = {
+  numShips: numShips,
+  boardSize: boardSize,
+  round: round,
+  sunkShips: sunkShips,
+};
 let board = [];
+const rowLabels = ["A", "B", "C", "D", "E", "F"];
 
 //Function to print the board
 const printBoard = (board, debug) => {
   let gameBoard = {};
-  const rowLabels = ["A", "B", "C", "D", "E", "F"];
 
   for (let i = 0; i < board.length; i++) {
     gameBoard[rowLabels[i]] = [];
@@ -16,6 +19,7 @@ const printBoard = (board, debug) => {
     for (let j = 0; j < board[i].length; j++) {
       let shipSection = board[i][j];
 
+      //Maybe use switch statements instead of if else something to think about.
       if (debug) {
         if (shipSection.type === "small") {
           gameBoard[rowLabels[i]][j] = "🟠";
@@ -84,37 +88,21 @@ const getShipCoordinates = (id, length) => {
 };
 
 const isValid = (x, y, direction, length) => {
-  //Checks for out of Bounds
   if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
     console.log("out of bounds");
     return false;
   }
-
-  //Check to make sure the Ships do not overlap (let's try to refactor this later to see if we really understand what is going on. )
   for (let i = 0; i < length; i++) {
     let checkX = x + (direction === "vertical" ? i : 0);
     let checkY = y + (direction === "horizontal" ? i : 0);
 
-    // Check if accessing an undefined cell
     if (!board[checkX] || !board[checkX][checkY]) {
-      console.log(
-        `Invalid placement at (${checkX}, ${checkY}) - Cell is undefined`
-      );
       return false;
     }
-
-    console.log(
-      `Checking (${checkX}, ${checkY}) - Type: ${board[checkX][checkY].type}`
-    );
-
     if (board[checkX][checkY].type !== "empty") {
-      console.log(
-        `Cell (${checkX}, ${checkY}) is occupied by ${board[checkX][checkY].type}`
-      );
       return false;
     }
   }
-
   return true;
 };
 
@@ -130,40 +118,139 @@ const placeShips = (id, x, y, direction, length) => {
   }
 };
 
-//===============================================================
+const getGridSize = () => {
+  let boardSize = ["4x4", "5x5", "6X6"];
+  let index = readLineSync.keyInSelect(boardSize, "Pick a board Size");
+  return boardSize[index];
+};
+
+const gameInfoSetup = (getGridSize) => {
+  let size = getGridSize;
+
+  if (size === "6x6") {
+    return (gameInfo = {
+      numShips: [2, 2, 3, 3],
+      boardSize: 6,
+      round: 0,
+      sunkShips: 0,
+      prevLocation: [],
+    });
+  } else if (size === "5x5") {
+    return (gameInfo = {
+      numShips: [2, 2, 3],
+      boardSize: 5,
+      round: 0,
+      sunkShips: 0,
+      prevLocation: [],
+    });
+  } else {
+    return (gameInfo = {
+      numShips: [2, 3],
+      boardSize: 4,
+      round: 0,
+      sunkShips: 0,
+      prevLocation: [],
+    });
+  }
+};
+
+const initValidPoints = (size) => {
+  const maxX = String.fromCharCode("a".charCodeAt(0) + (gridSize - 1));
+  const maxY = getMaxValue(size);
+
+  return new RegExp(`^[a-${maxX}A-${maxX.toUpperCase()}]${maxY}$`);
+};
+
+const getPlayerGuess = (validPoints) => {
+  return readLineSync.question("Enter a location to strik... ie:'A1' :  ", {
+    limit: validPoints,
+    limitMessage: "Not a valid point on the map, please try again. ",
+  });
+};
+
+const isDuplicate = (x, y) => {
+  return board[x][y].hit;
+};
+
+const handleGuess = (guess) => {
+  gameInfo.prevLocation.push(guess);
+
+  let x = rowLabels.indexOf(guess.slice(0, 1));
+  let y = guess.slice(1) - 1;
+
+  return { x, y };
+};
+
+const handleGuessResult = (x, y) => {
+  if (board[x][y].type !== "empty" && !board[x][y].hit) {
+    console.log("Hit");
+    board[x][y].hit = true;
+    let shipId = board[x][y];
+    if (isShipSunk(board, shipId)) {
+      console.log(`Ship ${shipId} has been sunk!`);
+    }
+  } else {
+    console.log("MISS");
+    board[x][y].hit = true;
+  }
+};
+
+const isShipSunk = (board, shipId) => {
+  for (let i = 0; i < board.length; i++) {
+    let row = board[i];
+    for (let j = 0; j < row.length; j++) {
+      let cell = board[i][j];
+      if (cell.id === shipId && !cell.hit) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
+//===============================================================//
 //Let's test theses functions to see how they would handling things
 
-makeBoard(boardSize, board);
-
-for (let i = 0; i < numShips.length; i++) {
-  let id = i + 1;
-  getShipCoordinates(id, numShips[i]);
-}
-
-console.table(board.map((row) => row.map((cell) => JSON.stringify(cell))));
-console.table(printBoard(board, true));
+/*
+  [x]]Test the functions to make sure they are working properly
+  [ ]Getting the grid size from the user and actually using that gridsize 
+  [ ]creating the numbers of ships per gridsize
+  [ ]placing the right ammount of ships in the right orientation
+*/
 
 /*
-Specifications for the game.
-  []Funtion to get the board size from the user.
-  []Function to get random points for ships. 
+I. Specifications for the game.
+  [ ]Funtion to get the board size from the user.
+  [x]Function to get random points for ships. 
     -Should check for vertical or horizonal placement, 
     -Ships cannot overlap
     -Ships cannot be placed diagonaly
-  []Function to get a players guess
-  []Function to process the guess   
-  []Function to check if the ships are sunk
-How many ships/board szie
+  [ ]Function to get a players guess
+  [ ]Function to process the guess   
+  [ ]Function to check if the ships are sunk
+II. How many ships/board szie
   4x4:
-    [] 1 large (3unit)
-    [] 1 small (2nunit)
+    [ ] 1 large (3unit)
+    [ ] 1 small (2nunit)
   5x5: 
-    [] 1 large (3unit)
-    [] 2 small (unit)
+    [ ] 1 large (3unit)
+    [ ] 2 small (2unit)
   6x6: 
-    [] 2 large (3unit)
-    [] 2 small (2unit)
+    [ ] 2 large (3unit)
+    [ ] 2 small (2unit)
 
-
-Game Logic
+III. Edge cases For the game.
+  -Things that would dynamically need to change. 
+    [ ]Grid Sizse
+    [ ]Number of ships(depending on the grid size...See III.)
+      if(size === "6x6"){
+        gridSize = 6;
+        numShips = [2,2,3,3];
+      } else if (size = 5X5) {
+        gridSize = 5; 
+        numShips = [2,2,3];
+      } else {
+        gridSize = 4; 
+        numShips = [2,3]; 
+      }
 */
