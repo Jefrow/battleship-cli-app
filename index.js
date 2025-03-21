@@ -1,10 +1,9 @@
 //The Game Board it will acutally house all of our ship objects.
 let readLineSync = require("readline-sync");
 let gameInfo = {
-  numShips: numShips,
-  boardSize: boardSize,
-  round: round,
-  sunkShips: sunkShips,
+  numShips: [],
+  boardSize: 0,
+  sunkShips: 0,
 };
 let board = [];
 const rowLabels = ["A", "B", "C", "D", "E", "F"];
@@ -43,7 +42,7 @@ const printBoard = (board, debug) => {
       }
     }
   }
-  return gameBoard;
+  console.table(gameBoard);
 };
 
 const makeBoard = (size, board) => {
@@ -58,18 +57,18 @@ const makeBoard = (size, board) => {
   return board;
 };
 
-const randomStartCoordinates = () => {
-  let x = Math.floor(Math.random() * boardSize);
-  let y = Math.floor(Math.random() * boardSize);
+const randomStartCoordinates = (size) => {
+  let x = Math.floor(Math.random() * size);
+  let y = Math.floor(Math.random() * size);
   let direction = Math.random() < 0.5 ? "horizontal" : "vertical";
 
   return { x, y, direction };
 };
 
-const getShipCoordinates = (id, length) => {
+const getShipCoordinates = (id, length, size) => {
   let startingCoordinates;
   do {
-    startingCoordinates = randomStartCoordinates();
+    startingCoordinates = randomStartCoordinates(size);
   } while (
     !isValid(
       startingCoordinates.x,
@@ -87,8 +86,8 @@ const getShipCoordinates = (id, length) => {
   );
 };
 
-const isValid = (x, y, direction, length) => {
-  if (x < 0 || x >= boardSize || y < 0 || y >= boardSize) {
+const isValid = (x, y, direction, length, size) => {
+  if (x < 0 || x >= size || y < 0 || y >= size) {
     console.log("out of bounds");
     return false;
   }
@@ -118,39 +117,22 @@ const placeShips = (id, x, y, direction, length) => {
   }
 };
 
-const getGridSize = () => {
-  let boardSize = ["4x4", "5x5", "6X6"];
-  let index = readLineSync.keyInSelect(boardSize, "Pick a board Size");
+const getBoardSize = () => {
+  let boardSize = ["4x4", "5x5", "6x6"];
+  let index = readLineSync.keyInSelect(boardSize, "Pick a board size : ");
   return boardSize[index];
 };
 
-const gameInfoSetup = (getGridSize) => {
-  let size = getGridSize;
-
-  if (size === "6x6") {
-    return (gameInfo = {
-      numShips: [2, 2, 3, 3],
-      boardSize: 6,
-      round: 0,
-      sunkShips: 0,
-      prevLocation: [],
-    });
-  } else if (size === "5x5") {
-    return (gameInfo = {
-      numShips: [2, 2, 3],
-      boardSize: 5,
-      round: 0,
-      sunkShips: 0,
-      prevLocation: [],
-    });
-  } else {
-    return (gameInfo = {
-      numShips: [2, 3],
-      boardSize: 4,
-      round: 0,
-      sunkShips: 0,
-      prevLocation: [],
-    });
+const gameInfoSetup = (string) => {
+  if (string === "6x6") {
+    gameInfo.numShips = [2, 2, 3, 3];
+    gameInfo.boardSize = 6;
+  } else if (string === "5x5") {
+    gameInfo.numShips = [2, 2, 3];
+    gameInfo.boardSize = 5;
+  } else if (string === "4x4") {
+    gameInfo.numShips = [2, 3];
+    gameInfo.boardSize = 4;
   }
 };
 
@@ -207,6 +189,28 @@ const isShipSunk = (board, shipId) => {
   }
   return true;
 };
+
+const gameSetUp = () => {
+  let sizeString = getBoardSize();
+
+  gameInfoSetup(sizeString);
+
+  let numShips = gameInfo.numShips;
+  let boardSize = gameInfo.boardSize;
+
+  makeBoard(boardSize, board);
+
+  for (let i = 0; i < numShips.length; i++) {
+    let shipId = i + 1;
+    let shiplength = numShips[i];
+
+    getShipCoordinates(shipId, shiplength, boardSize);
+  }
+  console.clear();
+};
+
+gameSetUp();
+printBoard(board, true);
 
 //===============================================================//
 //Let's test theses functions to see how they would handling things
