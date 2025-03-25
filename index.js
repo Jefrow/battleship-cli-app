@@ -60,17 +60,19 @@ const round = (gameInfo) => {
       printBoard(gameInfo, false);
 
       round(gameInfo, validPoints);
-    }, 1000);
+    }, 1500);
   } else {
     console.clear();
 
     printBoard(gameInfo, false);
 
-    winnerMessage();
+    setTimeout(() => {
+      winnerMessage();
 
-    readLineSync.keyInYNStrict("Would you like to play again?")
-      ? reset()
-      : endGameMessage();
+      readLineSync.keyInYNStrict("Would you like to play again?")
+        ? reset()
+        : endGameMessage();
+    }, 1000);
   }
 };
 
