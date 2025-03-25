@@ -32,7 +32,6 @@ const getShipCoordinates = (id, length, { boardSize, gameBoard }) => {
 
 const isValid = (x, y, direction, length, size, board) => {
   if (x < 0 || x >= size || y < 0 || y >= size) {
-    console.log("out of bounds");
     return false;
   }
   for (let i = 0; i < length; i++) {

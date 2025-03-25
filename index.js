@@ -15,6 +15,8 @@ const {
   handleGuessResult,
   winnerMessage,
   endGameMessage,
+  welcomeMessage,
+  noThanks,
 } = require("./helpers/gameHelpers");
 let gameInfo = {
   numShips: [],
@@ -64,9 +66,7 @@ const round = (gameInfo) => {
 
     printBoard(gameInfo, false);
 
-    setTimeout(() => {
-      winnerMessage();
-    }, 1000);
+    winnerMessage();
 
     readLineSync.keyInYNStrict("Would you like to play again?")
       ? reset()
@@ -85,12 +85,12 @@ const reset = () => {
 
 const initGame = () => {
   console.clear();
-  console.log("Welcometo BattleShip");
+  welcomeMessage();
   console.log("\n");
   console.log("\n");
   readLineSync.keyInYNStrict("Would you like to play?")
     ? (gameSetUp(gameInfo), printBoard(gameInfo, false), round(gameInfo))
-    : console.log("Have a nice day =)");
+    : noThanks();
 };
 
 initGame();
