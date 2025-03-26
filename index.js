@@ -45,6 +45,7 @@ const gameSetUp = (gameInfo) => {
 const round = (gameInfo) => {
   let playerGuess, guessCoords;
   let validPoints = initValidPoints(gameInfo);
+  printBoard(gameInfo, false);
 
   do {
     playerGuess = getPlayerGuess(validPoints).toUpperCase();
@@ -57,8 +58,6 @@ const round = (gameInfo) => {
     setTimeout(() => {
       console.clear();
 
-      printBoard(gameInfo, false);
-
       round(gameInfo, validPoints);
     }, 1500);
   } else {
@@ -70,7 +69,7 @@ const round = (gameInfo) => {
       winnerMessage();
 
       readLineSync.keyInYNStrict("Would you like to play again?")
-        ? reset()
+        ? (reset(), initGame())
         : endGameMessage();
     }, 1000);
   }
@@ -91,7 +90,7 @@ const initGame = () => {
   console.log("\n");
   console.log("\n");
   readLineSync.keyInYNStrict("Would you like to play?")
-    ? (gameSetUp(gameInfo), printBoard(gameInfo, false), round(gameInfo))
+    ? (gameSetUp(gameInfo), round(gameInfo))
     : noThanks();
 };
 
