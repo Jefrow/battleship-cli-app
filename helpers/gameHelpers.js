@@ -11,6 +11,9 @@ const gameInfoSetup = (string, gameInfo) => {
   } else if (string === "4x4") {
     gameInfo.numShips = [2, 3];
     gameInfo.boardSize = 4;
+  } else {
+    console.log("Thank you have a nice day =)");
+    process.exit(0);
   }
 };
 

@@ -59,7 +59,7 @@ const round = (gameInfo) => {
       console.clear();
 
       round(gameInfo, validPoints);
-    }, 1500);
+    }, 1000);
   } else {
     console.clear();
 
