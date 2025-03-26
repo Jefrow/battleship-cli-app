@@ -6,18 +6,18 @@ const getBoardSize = () => {
   return boardSize[index];
 };
 
-const printBoard = (gameInfo, debug) => {
+const printBoard = ({ gameBoard }, debug) => {
   const rowLabels = ["A", "B", "C", "D", "E", "F"];
   const columnLabels = [1, 2, 3, 4, 5, 6];
   let playBoard = {};
 
-  for (let i = 0; i < gameInfo.gameBoard.length; i++) {
+  for (let i = 0; i < gameBoard.length; i++) {
     let row = rowLabels[i];
     playBoard[row] = [];
 
-    for (let j = 0; j < gameInfo.gameBoard[i].length; j++) {
+    for (let j = 0; j < gameBoard[i].length; j++) {
       let col = columnLabels[j];
-      let shipSection = gameInfo.gameBoard[i][j];
+      let shipSection = gameBoard[i][j];
 
       if (debug) {
         if (shipSection.type === "small") {
