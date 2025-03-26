@@ -96,6 +96,7 @@ const endGameMessage = () => {
 };
 
 const welcomeMessage = () => {
+  console.clear();
   return console.log(`
 ____    __    ____  _______  __        ______   ______   .___  ___.  _______    .___________.  ______   
 \\   \\  /  \\  /   / |   ____||  |      /      | /  __  \\  |   \\/   | |   ____|   |           | /  __  \\  

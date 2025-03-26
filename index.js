@@ -85,7 +85,6 @@ const reset = () => {
 };
 
 const initGame = () => {
-  console.clear();
   welcomeMessage();
   console.log("\n");
   console.log("\n");
